@@ -13,6 +13,9 @@ def format_file(file):
 	struct_end_pattern = re.compile("[ \t]+\{")
 	struct_pattern = re.compile('([ \t]+)(.*struct.*[ \t]+)\{', flags=re.MULTILINE)
 
+	empty_comment_pattern = re.compile("\n\s*/[*]+\s*\*/", flags=re.MULTILINE)
+
+
 	with open(file) as f:
 		for line in f:
 			match = pattern.match(line)
@@ -32,11 +35,14 @@ def format_file(file):
 				indent_level =  match.groups()[0]
 				line = struct_end_pattern.sub(")\n" + indent_level + "{", line)
 
+			
 			lines.append(line)
 
+	joined = "".join(lines)
+	joined = empty_comment_pattern.sub("\n", joined)
 
 	with open(file, 'w') as f:
-		f.write("".join(lines))
+		f.write(joined)
 
 
 if __name__ == '__main__':
